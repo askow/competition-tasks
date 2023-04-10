@@ -23,11 +23,11 @@ public class AtmFacade {
 
     private List<Task> processRegionTasks(List<Task> regionTasks) {
         Map<Integer, List<Task>> atmIdToTask = regionTasks.stream().collect(Collectors.groupingBy(Task::getAtmId));
-        List<Task> highestPriorityTasks = atmIdToTask.values().stream()
+        return atmIdToTask.values().stream()
                 .map(this::selectHighestPriorityTask)
                 .flatMap(Optional::stream)
+                .sorted(TASK_REQUEST_PRIORITY_COMPARATOR)
                 .toList();
-        return highestPriorityTasks.stream().sorted(TASK_REQUEST_PRIORITY_COMPARATOR).toList();
     }
 
     private Optional<Task> selectHighestPriorityTask(List<Task> tasks) {
