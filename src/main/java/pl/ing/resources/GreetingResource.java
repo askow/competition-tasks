@@ -1,4 +1,4 @@
-package pl.ing;
+package pl.ing.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
