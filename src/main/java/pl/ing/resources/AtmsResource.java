@@ -1,8 +1,8 @@
 package pl.ing.resources;
 
 import pl.ing.business.AtmFacade;
-import pl.ing.business.dto.ATM;
-import pl.ing.business.dto.Task;
+import pl.ing.business.dto.atm.ATM;
+import pl.ing.business.dto.atm.Task;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;

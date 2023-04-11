@@ -1,5 +1,8 @@
-package pl.ing.business.dto;
+package pl.ing.business.dto.atm;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ATM {
     private final int region; // min 1, max 9999
     private final int atmId; // min 1, max 9999
