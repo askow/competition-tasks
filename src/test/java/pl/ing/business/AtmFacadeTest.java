@@ -2,9 +2,9 @@ package pl.ing.business;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import pl.ing.business.dto.ATM;
-import pl.ing.business.dto.RequestType;
-import pl.ing.business.dto.Task;
+import pl.ing.business.dto.atm.ATM;
+import pl.ing.business.dto.atm.RequestType;
+import pl.ing.business.dto.atm.Task;
 
 import java.util.List;
 

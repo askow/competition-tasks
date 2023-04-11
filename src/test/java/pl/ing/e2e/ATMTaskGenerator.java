@@ -1,8 +1,8 @@
 package pl.ing.e2e;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import pl.ing.business.dto.RequestType;
-import pl.ing.business.dto.Task;
+import pl.ing.business.dto.atm.RequestType;
+import pl.ing.business.dto.atm.Task;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,8 +1,8 @@
 package pl.ing.business;
 
-import pl.ing.business.dto.ATM;
-import pl.ing.business.dto.RequestType;
-import pl.ing.business.dto.Task;
+import pl.ing.business.dto.atm.ATM;
+import pl.ing.business.dto.atm.RequestType;
+import pl.ing.business.dto.atm.Task;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.*;
