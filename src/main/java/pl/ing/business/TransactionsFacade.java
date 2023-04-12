@@ -7,13 +7,14 @@ import javax.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @ApplicationScoped
 public class TransactionsFacade {
     public List<Account> calculateReport(List<Transaction> transactions) {
-        HashMap<String, BigDecimal> accountToBalance = new HashMap<>();
-        HashMap<String, Integer> accountToDebitCount = new HashMap<>();
-        HashMap<String, Integer> accountToCreditCount = new HashMap<>();
+        Map<String, BigDecimal> accountToBalance = new HashMap<>();
+        Map<String, Integer> accountToDebitCount = new HashMap<>();
+        Map<String, Integer> accountToCreditCount = new HashMap<>();
         transactions.forEach(t -> {
             accountToCreditCount.computeIfAbsent(t.getCreditAccount(), (k) -> 0);
             accountToCreditCount.computeIfPresent(t.getCreditAccount(), (k, v) -> v + 1);
