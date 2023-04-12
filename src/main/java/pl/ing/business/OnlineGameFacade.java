@@ -5,10 +5,10 @@ import pl.ing.business.dto.onlinegame.Order;
 import pl.ing.business.dto.onlinegame.Players;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -18,18 +18,28 @@ public class OnlineGameFacade {
         List<Clan> clans = makeValidClansInOrder(players);
         List<List<Order>> orders = new LinkedList<>();
         while (!clans.isEmpty()) {
-            AtomicInteger tmp = new AtomicInteger(0);
-            List<Clan> matchingClans = clans.stream().filter(clan -> {
-                if (tmp.get() + clan.getNumberOfPlayers() <= players.getGroupCount()) {
-                    tmp.addAndGet(clan.getNumberOfPlayers());
-                    return true;
-                } else return false;
-            }).toList();
-            List<Order> orderGroup = matchingClans.stream().map(c -> new Order(c.getNumberOfPlayers(), c.getPoints())).toList();
+            List<Clan> matchingClans = findMatchingClans(clans, players.getGroupCount());
+            List<Order> orderGroup = matchingClans.stream()
+                    .map(c -> new Order(c.getNumberOfPlayers(), c.getPoints()))
+                    .toList();
             orders.add(orderGroup);
             matchingClans.forEach(clans::remove);
         }
         return orders;
+    }
+
+    private List<Clan> findMatchingClans(List<Clan> clans, int groupCount) {
+        List<Clan> matchingClans = new LinkedList<>();
+        int currentGroupCount = 0;
+        for (Clan clan : clans) {
+            if (currentGroupCount + clan.getNumberOfPlayers() <= groupCount) {
+                matchingClans.add(clan);
+                currentGroupCount += clan.getNumberOfPlayers();
+            }
+            if (currentGroupCount == groupCount)
+                break;
+        }
+        return matchingClans;
     }
 
     private List<Clan> makeValidClansInOrder(Players players) {
