@@ -5,53 +5,48 @@ import pl.ing.business.dto.onlinegame.Order;
 import pl.ing.business.dto.onlinegame.Players;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class OnlineGameFacade {
+    private static final ClansComparator CLANS_COMPARATOR = new ClansComparator();
     public List<List<Order>> calculate(Players players) {
-        //filter groups that will not match
-        int capacity = players.getGroupCount();
-        List<Clan> validClans = players.getClans().stream()
-                .filter(clan -> clan.getNumberOfPlayers() <= capacity)
-                .sorted(new ClansComparator())
-                .toList();
-
-//        List<List<Order>> orders = new LinkedList<>();
-        Stack<List<Order>> stack = new Stack<>();
-        while (!validClans.isEmpty()) {
-            if (stack.empty()) {
-                Clan clan = validClans.get(0);
-                stack.push(List.of(new Order(clan.getNumberOfPlayers(), clan.getPoints())));
-                validClans = validClans.stream().filter(c -> c != clan).toList();
-            }
-            else {
-                List<Order> orders = stack.pop();
-                int currentGroupSize = orders.stream().map(Order::getNumberOfPlayers).reduce(0, Integer::sum);
-                AtomicInteger tmp = new AtomicInteger(currentGroupSize);
-                List<Clan> matchingClans = validClans.stream()
-                        .filter(c -> {
-                            boolean a = tmp.get() + c.getNumberOfPlayers() <= capacity;
-                            if (a)
-                                tmp.addAndGet(c.getNumberOfPlayers());
-                            return a;
-                        })
-                        .toList();
-                if (matchingClans.isEmpty()) {
-                    stack.push(orders);
-                    stack.push(new LinkedList<>());
-                }
-                else {
-                    Stream<Order> s2 = matchingClans.stream().map(c -> new Order(c.getNumberOfPlayers(), c.getPoints()));
-                    stack.push(Stream.concat(orders.stream(), s2).toList());
-                }
-                validClans = validClans.stream().filter(c -> !matchingClans.contains(c)).toList();
-            }
+        List<Clan> clans = makeValidClansInOrder(players);
+        List<List<Order>> orders = new LinkedList<>();
+        while (!clans.isEmpty()) {
+            List<Clan> matchingClans = findMatchingClans(clans, players.getGroupCount());
+            List<Order> orderGroup = matchingClans.stream()
+                    .map(c -> new Order(c.getNumberOfPlayers(), c.getPoints()))
+                    .toList();
+            orders.add(orderGroup);
+            matchingClans.forEach(clans::remove);
         }
+        return orders;
+    }
 
-        return stack.stream().toList();
+    private List<Clan> findMatchingClans(List<Clan> clans, int groupCount) {
+        List<Clan> matchingClans = new LinkedList<>();
+        int currentGroupCount = 0;
+        for (Clan clan : clans) {
+            if (currentGroupCount + clan.getNumberOfPlayers() <= groupCount) {
+                matchingClans.add(clan);
+                currentGroupCount += clan.getNumberOfPlayers();
+            }
+            if (currentGroupCount == groupCount)
+                break;
+        }
+        return matchingClans;
+    }
+
+    private List<Clan> makeValidClansInOrder(Players players) {
+        return players.getClans().stream()
+                .filter(clan -> clan.getNumberOfPlayers() <= players.getGroupCount())
+                .sorted(CLANS_COMPARATOR)
+                .collect(Collectors.toList());
     }
 
     private static class ClansComparator implements Comparator<Clan> {
