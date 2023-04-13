@@ -5,7 +5,6 @@ import pl.ing.business.dto.onlinegame.Order;
 import pl.ing.business.dto.onlinegame.Players;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
